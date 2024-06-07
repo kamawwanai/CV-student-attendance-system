@@ -7,9 +7,12 @@ project(CV-SAS VERSION 0.1 LANGUAGES CXX)
 # Включаем генерацию файла компиляции
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-#  Компиляторы
-set(CMAKE_C_COMPILER clang)
-set(CMAKE_CXX_COMPILER clang++)
+if(NOT CMAKE_C_COMPILER)
+    set(CMAKE_C_COMPILER clang)
+endif()
+if(NOT CMAKE_CXX_COMPILER)
+    set(CMAKE_CXX_COMPILER clang++)
+endif()
 
 # Стандарт C++
 set(CMAKE_CXX_STANDARD 20)
@@ -19,7 +22,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 find_package( OpenCV REQUIRED )
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
-# Исполняемый файл
-add_executable(${PROJECT_NAME} main.cpp)
+# dlib
+find_package(dlib REQUIRED)
+include_directories(${DLIB_INCLUDE_DIRS})
 
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} )
+add_subdirectory(sources/FaceRecognition)
+
+# Исполняемый файл
+add_executable(${PROJECT_NAME} sources/main.cpp)
+
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} dlib::dlib face_recognition)
